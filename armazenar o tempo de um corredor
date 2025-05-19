@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct Corredor {
+    char nome[50];
+    int tempo;
+    struct Corredor *esq, *dir;
+} Corredor;
+
+
+Corredor* criarCorredor(char nome[], int tempo) {
+    Corredor* novo = (Corredor*)malloc(sizeof(Corredor));
+    strcpy(novo->nome, nome);
+    novo->tempo = tempo;
+    novo->esq = novo->dir = NULL;
+    return novo;
+}
+
+void inserir(Corredor** raiz, char nome[], int tempo, int tempoCorte) {
+    if (*raiz == NULL) {
+        *raiz = criarCorredor(nome, tempo);
+        return;
+    }
+
+    if (tempo < tempoCorte)
+        inserir(&((*raiz)->dir), nome, tempo, tempoCorte);
+    else
+        inserir(&((*raiz)->esq), nome, tempo, tempoCorte);
+}
+
+
+void exibirClassificados(Corredor* raiz) {
+    if (raiz == NULL) return;
+    
+    exibirClassificados(raiz->dir);
+    printf("%s - Tempo: %d\n", raiz->nome, raiz->tempo);
+    exibirClassificados(raiz->esq);
+}
+
+int main() {
+    Corredor* raiz = NULL;
+    int tempoCorte = 50;
+
+    // Inserindo corredores na árvore
+    inserir(&raiz, "Alice", 45, tempoCorte);
+    inserir(&raiz, "Bob", 55, tempoCorte);
+    inserir(&raiz, "Carlos", 40, tempoCorte);
+    inserir(&raiz, "Diana", 60, tempoCorte);
+    inserir(&raiz, "Eduardo", 30, tempoCorte);
+
+    printf("Corredores classificados:\n");
+    exibirClassificados(raiz);
+
+    return 0;
+}
