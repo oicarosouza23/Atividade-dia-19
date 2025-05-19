@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int valor;
+    struct Node *esq, *dir;
+} Node;
+
+
+Node* criarNo(int valor) {
+    Node* novo = (Node*)malloc(sizeof(Node));
+    novo->valor = valor;
+    novo->esq = novo->dir = NULL;
+    return novo;
+}
+
+void inserir(Node** raiz, int valor) {
+    if (*raiz == NULL) {
+        *raiz = criarNo(valor);
+        return;
+    }
+
+    
+    if ((*raiz)->esq == NULL)
+        inserir(&((*raiz)->esq), valor);
+    else
+        inserir(&((*raiz)->dir), valor);
+}
+
+
+int buscar(Node* raiz, int valor, char caminho[]) {
+    if (raiz == NULL) return 0;
+
+    if (raiz->valor == valor) {
+        printf("Caminho: %s -> %d\n", caminho, valor);
+        return 1;
+    }
+
+    char novoCaminhoEsq[100], novoCaminhoDir[100];
+    sprintf(novoCaminhoEsq, "%s -> E", caminho);
+    sprintf(novoCaminhoDir, "%s -> D", caminho);
+
+    if (buscar(raiz->esq, valor, novoCaminhoEsq) || buscar(raiz->dir, valor, novoCaminhoDir))
+        return 1;
+
+    return 0;
+}
+
+
+void exibirArvore(Node* raiz) {
+    if (raiz == NULL) return;
+
+    printf("%d ", raiz->valor);
+    exibirArvore(raiz->esq);
+    exibirArvore(raiz->dir);
+}
+
+int main() {
+    Node* raiz = NULL;
+    int valores[] = {10, 20, 30, 40, 50};
+    int n = sizeof(valores)/sizeof(valores[0]);
+
+    
+    for (int i = 0; i < n; i++)
+        inserir(&raiz, valores[i]);
+
+    int numeroBuscado = 50;
+    if (!buscar(raiz, numeroBuscado, "Raiz"))
+        printf("Número não encontrado. Árvore completa:\n"), exibirArvore(raiz);
+
+    return 0;
+}
